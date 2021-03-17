@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,17 +10,26 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import org.snu.ids.kkma.index.Keyword;
+import org.snu.ids.kkma.index.KeywordExtractor;
+import org.snu.ids.kkma.index.KeywordList;
+
 
 public class SimpleIR {
 
 	public static void main(String[] args) {
 		Document doc = setXML(); // doc 초기파일 작성
 		doc = makeBody(doc);
-		makeXML("SimpleIR", doc); // XML파일 생성 (만들파일이름, doc)
+		makeXML("collection", doc); // XML파일 생성 (만들파일이름, doc)
+		Document doc2;
+		doc2 = kkma(doc); // 형태소 작업
+		makeXML("index",doc2); // XML파일 생성 (형태소 작업 한거)
 	}
 
 	public static Document setXML() {
@@ -43,7 +51,6 @@ public class SimpleIR {
 		
 		return null;
 	}
-
 	public static Document appendXML(Document doc, int num, String name, String txt) {
 		NodeList n1 = doc.getElementsByTagName("docs");
 		Node temp = n1.item(0);
@@ -64,7 +71,6 @@ public class SimpleIR {
 		
 		return doc;
 	}
-	
 	public static Document makeBody(Document doc) {
 		File folder = new File("./2주차 실습 html"); // 폴더 불러오기
 		File[] list = folder.listFiles(); // 파일들 배열에 저장
@@ -124,54 +130,32 @@ public class SimpleIR {
 	    }
 	    return str;
 	}
-}
-
-
-
-
-
-
-
-
-/*
-		try {
-			int num=0;
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	public static Document kkma(Document doc) {
+		NodeList n1 = doc.getElementsByTagName("body");
+		File folder = new File("./2주차 실습 html"); // 폴더 불러오기
+		File[] list = folder.listFiles(); // 파일들 배열에 저장 (반복용)
+		//System.out.println(n1.getLength());
 		
-			Document doc = docBuilder.newDocument();
-			
-			Element docs = doc.createElement("docs");
-			doc.appendChild(docs);
-			
-			//아마 여기부터 반복문
-			
-			Element docId = doc.createElement("doc");
-			docs.appendChild(docId);
-			
-			docId.setAttribute("id", Integer.toString(num)); //num이 순서 +1 처리해줘야함
-			
-			Element title = doc.createElement("title");
-			title.appendChild(doc.createTextNode("파일명")); //여기에 html 파일이름
-			docId.appendChild(title);
-			
-			Element body = doc.createElement("body");
-			body.appendChild(doc.createTextNode("내용"));
-			docId.appendChild(body);
-			//여기까지 반복문
-			
-			//XML 파일 생성
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new FileOutputStream(new File("./src/test.xml")));
-			
-			transformer.transform(source, result);
-			
-		} catch(Exception e) {
-			e.printStackTrace();
+		Document doc2 = setXML(); // index.xml
+		
+		for(int i=0;i<n1.getLength();i++) { // 형태소 작업
+			Node temp = n1.item(i);
+			Element docs = (Element)temp;
+			String kkma = temp.getTextContent();
+			//System.out.println(test);
+			KeywordExtractor ke = new KeywordExtractor();
+			KeywordList kl = ke.extractKeyword(kkma, true);
+			//System.out.println(kl);
+			Keyword kwrd;
+			kkma ="";
+			for(int j=0;j<kl.size();j++) { // 형태소 작업한 Body의 스트링문
+				kwrd = kl.get(j);
+				kkma += kwrd.getString()+":"+kwrd.getCnt()+"#";
+			}
+			doc2 = appendXML(doc2, i, list[i].getName(), kkma); // index.xml에 스트링 추가
 		}
- */
+		
+		return doc2;
+	}
+
+}
