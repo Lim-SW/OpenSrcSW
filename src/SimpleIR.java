@@ -23,13 +23,14 @@ import org.snu.ids.kkma.index.KeywordList;
 
 public class SimpleIR {
 
+	static String PATH = "./2주차 실습 html"; //경로 전역변수
+	
 	public static void main(String[] args) {
 		Document doc = setXML(); // doc 초기파일 작성
-		doc = makeBody(doc);
+		doc = makeBody(doc); // body에 내용 채우기
 		makeXML("collection", doc); // XML파일 생성 (만들파일이름, doc)
-		Document doc2;
-		doc2 = kkma(doc); // 형태소 작업
-		makeXML("index",doc2); // XML파일 생성 (형태소 작업 한거)
+		doc = kkma(doc); // 형태소 작업
+		makeXML("index",doc); // XML파일 생성 (형태소 작업 한거)
 	}
 
 	public static Document setXML() {
@@ -72,7 +73,7 @@ public class SimpleIR {
 		return doc;
 	}
 	public static Document makeBody(Document doc) {
-		File folder = new File("./2주차 실습 html"); // 폴더 불러오기
+		File folder = new File(PATH); // 폴더 불러오기
 		File[] list = folder.listFiles(); // 파일들 배열에 저장
  
 		for(int i=0;i<list.length;i++) { // 파일 갯수만큼 반복해서 Append
@@ -96,7 +97,7 @@ public class SimpleIR {
 	            body = tagFilter(body);
 	            body = body.substring(23+setIdx, body.length());
 				
-				doc = appendXML(doc, i, name, body); // doc에 내용 추가
+				doc = appendXML(doc, i, name, body); // doc에 body 내용 추가
 	            bufReader.close();
 	            
 			} catch(Exception e) {
@@ -132,30 +133,26 @@ public class SimpleIR {
 	}
 	public static Document kkma(Document doc) {
 		NodeList n1 = doc.getElementsByTagName("body");
-		File folder = new File("./2주차 실습 html"); // 폴더 불러오기
+		File folder = new File(PATH); // 폴더 불러오기
 		File[] list = folder.listFiles(); // 파일들 배열에 저장 (반복용)
 		//System.out.println(n1.getLength());
 		
-		Document doc2 = setXML(); // index.xml
-		
 		for(int i=0;i<n1.getLength();i++) { // 형태소 작업
 			Node temp = n1.item(i);
-			Element docs = (Element)temp;
 			String kkma = temp.getTextContent();
-			//System.out.println(test);
 			KeywordExtractor ke = new KeywordExtractor();
 			KeywordList kl = ke.extractKeyword(kkma, true);
 			//System.out.println(kl);
 			Keyword kwrd;
-			kkma ="";
-			for(int j=0;j<kl.size();j++) { // 형태소 작업한 Body의 스트링문
+			kkma =""; // 빈 스트링문으로 초기화
+			for(int j=0;j<kl.size();j++) { // 형태소 작업한 Body의 스트링문 합치기
 				kwrd = kl.get(j);
 				kkma += kwrd.getString()+":"+kwrd.getCnt()+"#";
 			}
-			doc2 = appendXML(doc2, i, list[i].getName(), kkma); // index.xml에 스트링 추가
+			temp.setTextContent(kkma); // 형태소 작업한 전체 body를 교체
 		}
 		
-		return doc2;
+		return doc;
 	}
 
 }
