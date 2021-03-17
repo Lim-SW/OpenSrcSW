@@ -133,8 +133,6 @@ public class SimpleIR {
 	}
 	public static Document kkma(Document doc) {
 		NodeList n1 = doc.getElementsByTagName("body");
-		File folder = new File(PATH); // 폴더 불러오기
-		File[] list = folder.listFiles(); // 파일들 배열에 저장 (반복용)
 		//System.out.println(n1.getLength());
 		
 		for(int i=0;i<n1.getLength();i++) { // 형태소 작업
