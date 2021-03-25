@@ -258,7 +258,7 @@ public class indexer {
 			for(int j=0;j<split.length;j++) {
 				float f = Float.parseFloat(split[j]);
 				//System.out.println(f);
-				//f = (float) (Math.round(f*100)/100.0); // 셋째 자리에서 반올림
+				f = (float) (Math.round(f*100)/100.0); // 셋째 자리에서 반올림
 				//System.out.println(f);
 				array.add(f);
 				//System.out.println(array);
