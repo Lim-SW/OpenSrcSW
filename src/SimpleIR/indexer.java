@@ -50,8 +50,41 @@ public class indexer {
 		String strText, numText; // strText == 글자, numText == 나온빈도수
 		
 		List Wlist = new ArrayList();
+		//List TextList = new ArrayList();
 		
+		String Sample = "";
+		
+		//틀 만들기
+		for(int l=0;l<N;l++) {
+			if(l==0) {
+				Sample+=l+" "+"0.0";
+			}
+			else {
+				Sample+=" "+l+" "+"0.0";
+			}
+		}
+		//System.out.println(Sample); // doc 갯수만큼 0.0 으로 초기화
+		
+		for(int i=0;i<N;i++) {
+			for(int j=0;j<BigArr[i].length;j++) {
+				String forBig = BigArr[i][j];
+				if(Wlist.contains(forBig)) { // 이미있으면 초기화 안해도 됨
+				}
+				else {
+					Wlist.add(forBig); // 한글 , sample 추가해서 틀 작성
+					Wlist.add(Sample);
+				}
+			}
+		}
+		/*
+		for(int i=0;i<Wlist.size()-5;i+=6) { //리스트에 잘 저장되어있는지 확인
+			System.out.println(Wlist.get(i));
+			System.out.print(Wlist.get(i+1).toString());
+			System.out.println();
+		}
+		*/
 		for(int i=0;i<N/*DocArr.size()*/;i++) {
+			
 			String tempDoc = DocArr.get(i).toString();
 			//System.out.println(tempDoc);
 			while(tempDoc.isEmpty()==false) {
@@ -71,7 +104,7 @@ public class indexer {
 				for(int j=0;j<N;j++) { // N개의 문서 전부 확인
 					for(int k=0;k<BigArr[j].length;k++) { // 문서안의 모든 단어들로 접근(BigArr)
 						if(BigArr[j][k].equals(strText)) { // 단어가 들어있는 문서가 있을때 마다 +1
-							df++; 
+							df++;
 						}
 					}
 				}
@@ -96,20 +129,45 @@ public class indexer {
 				}
 				*/
 				df=0; // df값 초기화
-				//여기서 w 해줘야함
 				
+				//여기서 w 해줘야함
+				int Wtemp = Wlist.indexOf(strText)+1; // 단어의 가중치모음 인덱스
+				//System.out.println(Wtemp);
+				String StrT1 = Wlist.get(Wtemp).toString(); //가중치 모음 가져오기
+				//System.out.println(StrT1);
+				String[] split = null;
+				split = StrT1.split(" "); // 가중치 쪼개기 (docid / 가중치 / docid / 가중치 / ...)
+				/*
+				for(int o=0;o<split.length;o++) {
+					System.out.println(split[o]);
+				}
+				*/
+				//System.out.println(split.length);
+				split[(i*2)+1] = Double.toString(w); // 계산된 적절한 위치에 가중치 덮어쓰기
+				String StrT2="";
+				for(int s=0;s<split.length;s++) { // 쪼갠거 다시 합하기
+					if(s==0) {
+						StrT2 += split[s];
+					}
+					else {
+						StrT2 += " "+split[s];
+					}
+				}
+				//System.out.println(StrT2);
+				
+				Wlist.set(Wtemp, StrT2); // 수정된 가중치 적용
+				
+				/*
 				if(Wlist.contains(strText)) { // 문서의 단어가 리스트에 이미 존재하면 새로만들지 않고 기존에 추가
 					int Wtemp = Wlist.indexOf(strText)+1; // 짝수=key 홀수=tf-idf 모음
 					//System.out.println("홀수:"+Wtemp); // 이거 무조건 홀수여야함(test)
-					String temp = Wlist.get(Wtemp).toString();
-					temp = temp + " "+i+" "+w;
-					Wlist.set(Wtemp, temp);
-				
+					Wlist.set(Wtemp, w);	
 				}
 				else { // 문서의 단어가 처음등장 한거라면 리스트에 새로 추가
-					Wlist.add(strText);
-					Wlist.add(i+" "+w);
+					//Wlist.add(strText);
+					//Wlist.add(i+" "+w);
 				}
+				*/
 			}
 		}
 		
