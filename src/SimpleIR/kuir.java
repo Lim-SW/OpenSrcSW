@@ -1,6 +1,9 @@
 package SimpleIR;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.w3c.dom.Document;
 
@@ -10,6 +13,7 @@ public class kuir {
 		makeCollection mc = new makeCollection();
 		makeKeyword mk = new makeKeyword();
 		indexer ix = new indexer();
+		searcher sc = new searcher();
 		//String PATH = "./html";
 		
 		String COMP = args[0]; // -c -k -i
@@ -36,6 +40,18 @@ public class kuir {
 			Document doc = mk.getDoc(PATH);
 			ix.makeHashmap(doc); //index.xml
 			System.out.println("index.post 생성 완료");
+		}
+		
+		else if(COMP.equals("-s")) { // 0번 인자값이 -s 5주차
+			String query = args[3]; // 질의어
+			String PATH2 = PATH.replace("index.post", "collection.xml"); //같은경로에 collection.xml 있어야함
+			Document doc = mk.getDoc(PATH2); //collection.xml 가져오기
+			
+			List<String> list = new ArrayList<>();
+			list = sc.CalcSim(PATH, query, doc);
+			//System.out.println(list);
+			sc.scSort(list, doc);
+			
 		}
 		
 		else { // 0번 인자값이 엉뚱한값
