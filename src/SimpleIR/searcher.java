@@ -28,7 +28,7 @@ import org.w3c.dom.NodeList;
 public class searcher  {
 //-s ./index.post -q "라면에는 면, 분말 스프가 있다."
 
-	List<String> CalcSim2(String PATH, String query, Document Doc){
+	List<String> CalcSim(String PATH, String query, Document Doc){
 		HashMap hm = new HashMap();
 		hm = getHashMap(PATH);
 		
@@ -111,7 +111,9 @@ public class searcher  {
 					calList.set(l, Float.toString(calf)); // 리스트에 저장
 				}
 				
-				//이건 이너프로덕트
+				// 이너프로덕트 함수 사용하기
+				ipList = Innerproduct(PATH, query, Doc);
+				/*
 				for(int l=0;l<n1.getLength();l++) { // 값 계산한거 
 					float calf1 = Float.parseFloat(ipList.get(l));
 					float calf2 = Wq*Float.parseFloat(list.get((l*2)+1)); // 1(단어가중치)이랑 곱하기
@@ -119,7 +121,7 @@ public class searcher  {
 					float calf = calf1+calf2;
 					//calf = (float) (Math.round(calf*100)/100.0); // 반올림
 					ipList.set(l, Float.toString(calf)); // 리스트에 저장
-				}
+				}*/
 				
 				//System.out.println(calList);
 				//System.out.println(ipList);
@@ -242,4 +244,84 @@ public class searcher  {
 		}
 	}
 
+	List<String> Innerproduct(String PATH, String query, Document Doc){
+			HashMap hm = new HashMap();
+			hm = getHashMap(PATH);
+			
+			List queryList = new ArrayList(); // 형태소 작업 시작
+			KeywordExtractor ke = new KeywordExtractor(); 
+			KeywordList kl = ke.extractKeyword(query, true);
+			Keyword kwrd;
+			for(int j=0;j<kl.size();j++) {
+				kwrd = kl.get(j);
+				queryList.add(kwrd.getString());
+			}
+			//System.out.println(queryList);  // 형태소 작업 끝
+			
+			List<String> calList = new ArrayList(); // 계산값 누적 여기에 저장
+			
+			for(int i=0;i<queryList.size();i++) {
+				if(hm.containsKey(queryList.get(i))) { // 쿼리문의 단어가 해쉬맵에 있으면
+					String temp = (String) hm.get(queryList.get(i));
+					temp = temp.replace("[", "");
+					temp = temp.replace("]", "");
+					List<String> list = new ArrayList<>(Arrays.asList(temp.split(", ")));
+					//System.out.println(list);
+					
+					float cal = 0;
+					float zero = 0;
+					float Wq = 1;
+					float ten = 0;
+					
+					NodeList n1 = Doc.getElementsByTagName("title"); // 반복문에 쓸 길이용
+					Node title = n1.item(i);
+					
+					int banbok=(n1.getLength()*2)-list.size();
+					
+					if(list.size()<10) {
+						banbok = 10-list.size();
+						for(int y=0;y<banbok;y++){
+							list.add("0.0");//일단 가득 채워
+						}
+						
+						for(int x=0;x<list.size()-1;x+=2) { // 없는거 doc번호랑 0으로 틀 맞추기
+							if(!list.get(x).equals(Float.toString(ten))) {
+								list.add(x, "0.0");
+								list.add(x, Float.toString(ten));
+								ten++;
+							}
+							
+							else {
+								ten++;
+							}
+							
+							while(list.size()>10) { // index 초과하는거 삭제
+								int size = list.size();
+								list.remove(size-1);
+							}
+						}
+					}
+					//System.out.println(list);
+					//Query*id 0 1 2 3 4
+					if(calList.size()==0) { // 리턴용 리스트
+						for(int n=0;n<n1.getLength();n++) {
+							calList.add("0.0");
+						}
+					}
+					
+					for(int l=0;l<n1.getLength();l++) { // 값 계산한거 
+						float calf1 = Float.parseFloat(calList.get(l));
+						float calf2 = Wq*Float.parseFloat(list.get((l*2)+1)); // 1(단어가중치)이랑 곱하기
+						float calf = calf1+calf2;
+						calf = (float) (Math.round(calf*100)/100.0); // 반올림
+						calList.set(l, Float.toString(calf)); // 리스트에 저장
+					}
+					//System.out.println(calList);
+				}
+			}
+			
+			return calList;
+		}
+
+	
 }
