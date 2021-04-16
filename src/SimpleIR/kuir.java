@@ -48,7 +48,7 @@ public class kuir {
 			Document doc = mk.getDoc(PATH2); //collection.xml 가져오기
 			
 			List<String> list = new ArrayList<>();
-			list = sc.CalcSim(PATH, query, doc);
+			list = sc.CalcSim2(PATH, query, doc);
 			//System.out.println(list);
 			sc.scSort(list, doc);
 			

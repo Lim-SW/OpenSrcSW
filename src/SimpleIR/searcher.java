@@ -27,7 +27,8 @@ import org.w3c.dom.NodeList;
 
 public class searcher  {
 //-s ./index.post -q "라면에는 면, 분말 스프가 있다."
-	List<String> CalcSim(String PATH, String query, Document Doc){
+
+	List<String> CalcSim2(String PATH, String query, Document Doc){
 		HashMap hm = new HashMap();
 		hm = getHashMap(PATH);
 		
