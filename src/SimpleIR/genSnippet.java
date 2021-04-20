@@ -23,7 +23,8 @@ public class genSnippet {
 		//인풋으로 받은 스트링을 공백단위로 구분해서 리스트로 저장하는것 구현
 		//텍스트파일 불러와서 라인별로 리스트에 저장하는것 구현
 		//라인별로 저장된 텍스트를 공백단위로 구분해서 비교할때 사용할수있도록함
-		// 가장 유사도 높은 라인 출력
+		//가장 유사도 높은 라인 출력하게 함
+		//인덱스 저장부분이 시간이 없어서 구현하지 못했습니다...ㅠㅠ
 		
 		String COMP = args[0];
 		String PATH = args[1];
@@ -58,10 +59,9 @@ public class genSnippet {
                 		}
             		}
             		if(best<count) {
-            			best = j; //가장 유사도 높은라인
+            			best = j; //가장 유사도 높은라인의 인덱스를 저장
             		}
-            		else if(best == count) {
-            			
+            		else if(best == count) { // 같을시 앞선 라인 출력
             		}
             		
             	}
