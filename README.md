@@ -23,3 +23,13 @@
  └ searcher.java (CalcSim) 완성
  
  └ sort 하여 3순위까지 출력 (동일값일시 다큐먼트 번호 빠른거 먼저)
+
+-2021.04.16 6~7주차 까지 내용 완성 + PUSH
+
+ └ 임의로 충돌 발생후 Calcsim2로 함수이름 변경후 임시 병합
+ 
+ └ 병합후 master에서 Innerproduct 함수 feature branch의 원래내용으로 새로 생성
+
+ └ Calcsim2 를 원래 함수이름 Calcsim 으로 변경하고 함수 내에서 Innerproduct 메소드를 불러와 사용
+
+ └ 최종 출력은 Cosine similarity로 출력
